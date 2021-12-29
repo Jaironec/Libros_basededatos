@@ -17,7 +17,7 @@ namespace Libros_basededatos
         {
             InitializeComponent();
         }
-        SqlConnection conexion = new SqlConnection(@"server=DESKTOP-GIBA0R2\SQLEXPRESS; database=TI2021_Jairon; Integrated Security=true");
+        SqlConnection conexion = new SqlConnection(@"server=DESKTOP-FR5FQ7D\SQLEXPRESS01; database=TI2021_Jairon; Integrated Security=true");
 
         private void bntIngresar_Click(object sender, EventArgs e)
         {
@@ -96,11 +96,12 @@ namespace Libros_basededatos
                 cmd3.ExecuteNonQuery();
                 conexion.Close();
                 MessageBox.Show("PERSONA ELIMINADA CON EXITO", "ELIMINO", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                DataTable dt = getpersona();
-                txtCodigo.Clear();
-                txtNombre.Clear();
-                txtPrecio.Clear();
+                DataTable dt = getpersona();    
                 Base_de_datos_libro_Load(sender, e);
+                textVerCodigo.Clear();
+                textVerNombre.Clear();
+                textVerPrecio.Clear();
+            
             }
             else
             {
@@ -110,23 +111,30 @@ namespace Libros_basededatos
 
         private void btnActualizar_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("¿ESTAS SEGURO QUE DESEAS ACTUALIZAR?", "CONFIRMAR", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            try
             {
-                conexion.Open();
-                string actualizar = "UPDATE TablaLibros SET nombreLibro=@nombreLibro, precioLibro=@precioLibro, fechaCompra=@fechaCompra WHERE cod_Libro=@cod_Libro";
-                SqlCommand cmd2 = new SqlCommand(actualizar, conexion);
-                cmd2.Parameters.AddWithValue("@cod_Libro", this.textVerCodigo.Text);
-                cmd2.Parameters.AddWithValue("@precioLibro", this.textVerPrecio.Text);
-                cmd2.Parameters.AddWithValue("@nombreLibro", this.textVerNombre.Text);
-                cmd2.Parameters.AddWithValue("@fechaCompra", VerDatoFecha.Value);
-                cmd2.ExecuteNonQuery();
-                MessageBox.Show("Los datos han sido actualizados");
-                conexion.Close();
-                DataTable dt = getpersona();
-                txtCodigo.Clear();
-                txtNombre.Clear();
-                txtPrecio.Clear();
-                Base_de_datos_libro_Load(sender, e);
+                if (MessageBox.Show("¿ESTAS SEGURO QUE DESEAS ACTUALIZAR?", "CONFIRMAR", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    conexion.Open();
+                    string actualizar = "UPDATE TablaLibros SET nombreLibro=@nombreLibro, precioLibro=@precioLibro, fechaCompra=@fechaCompra WHERE cod_Libro=@cod_Libro";
+                    SqlCommand cmd2 = new SqlCommand(actualizar, conexion);
+                    cmd2.Parameters.AddWithValue("@cod_Libro", this.textVerCodigo.Text);
+                    cmd2.Parameters.AddWithValue("@precioLibro", this.textVerPrecio.Text);
+                    cmd2.Parameters.AddWithValue("@nombreLibro", this.textVerNombre.Text);
+                    cmd2.Parameters.AddWithValue("@fechaCompra", VerDatoFecha.Value);
+                    cmd2.ExecuteNonQuery();
+                    MessageBox.Show("Los datos han sido actualizados");
+                    conexion.Close();
+                    DataTable dt = getpersona();
+                    Base_de_datos_libro_Load(sender, e);
+                    textVerCodigo.Clear();
+                    textVerNombre.Clear();
+                    textVerPrecio.Clear();
+                }              
+            }
+            catch (SqlException E)
+            {
+                MessageBox.Show("EL PRECIO DEBE SER UN NUMERO ENTERO", E.Message);
             }
         }
     }
